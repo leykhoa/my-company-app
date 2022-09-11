@@ -1,0 +1,118 @@
+@import '~bootstrap/scss/bootstrap';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Water+Brush&display=swap');
+
+html {
+	font-size: 62.5%;
+	width: 100%;
+}
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+body {
+	font-family: 'Roboto', sans-serif;
+	font-size: 1.6rem;
+	line-height: 1.5;
+	text-rendering: optimizeSpeed;
+}
+.fixed-top {
+	background: linear-gradient(
+		180deg,
+		rgba(0, 0, 0, 1) 0%,
+		rgba(20, 20, 41, 1) 50%,
+		rgba(43, 43, 80, 1) 100%
+	);
+}
+.DefaultLayout_wrapper__hKJda {
+	.navbar-brand {
+		width: 160px !important;
+		padding: 0 20px 0 20px !important;
+	}
+	.nav-link {
+		display: flex;
+		align-items: center;
+		flex-basis: 100px;
+		font-size: 1.8rem;
+		font-weight: bold;
+		color: white;
+		&:hover {
+			border-bottom: 5px solid orange;
+			color: orange;
+		}
+		justify-content: center;
+	}
+
+	.navbar-nav {
+		height: 60px;
+	}
+
+	.navbar-expand {
+		padding: 0;
+	}
+}
+.LayoutNotSideBar_wrapper__O2QGF {
+	.navbar-brand {
+		width: 160px !important;
+		padding: 0 20px 0 20px !important;
+	}
+	.nav-link {
+		display: flex;
+		align-items: center;
+		flex-basis: 100px;
+		font-size: 1.8rem;
+		font-weight: bold;
+		color: white;
+		&:hover {
+			border-bottom: 5px solid orange;
+			color: orange;
+		}
+		justify-content: center;
+	}
+
+	.navbar-nav {
+		height: 60px;
+	}
+
+	.navbar-expand {
+		padding: 0;
+	}
+}
+
+#components-layout-demo-side .logo {
+	height: 32px;
+	margin: 16px;
+	background: rgba(255, 255, 255, 0.3);
+}
+
+.site-layout .site-layout-background {
+	background: #fff;
+}
+.ant-layout-sider-children,
+.ant-menu-light {
+	background: linear-gradient(
+		270deg,
+		rgba(0, 0, 0, 1) 0%,
+		rgba(20, 20, 41, 1) 50%,
+		rgba(43, 43, 80, 1) 100%
+	) !important;
+	font-size: 3em;
+	color: white !important;
+	font-weight: bold;
+	position: fixed;
+}
+.ant-layout-sider-trigger {
+	position: absolute !important;
+}
+.ant-layout-sider,
+.ant-menu-item {
+	background: linear-gradient(
+		270deg,
+		rgba(0, 0, 0, 1) 0%,
+		rgba(20, 20, 41, 1) 50%,
+		rgba(43, 43, 80, 1) 100%
+	);
+}
+.ant-menu-item-selected {
+	background: rgb(238, 249, 255) !important;
+}

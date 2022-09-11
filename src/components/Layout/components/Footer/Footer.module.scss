@@ -1,0 +1,23 @@
+.wrapper {
+	width: 100%;
+	min-height: 200px;
+	background: linear-gradient(
+		0deg,
+		rgba(0, 0, 0, 1) 0%,
+		rgba(20, 20, 41, 1) 50%,
+		rgba(43, 43, 80, 1) 100%
+	);
+}
+
+.title {
+	color: white;
+	padding: 20px;
+	text-transform: uppercase;
+	width: 100%;
+}
+.content > p {
+	width: 100%;
+	padding: 0px 20px;
+	color: white !important;
+	font-size: 1.5rem;
+}

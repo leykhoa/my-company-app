@@ -1,0 +1,14 @@
+.public {
+	flex-direction: row;
+	display: flex;
+}
+.private {
+	justify-content: flex-end;
+	flex-direction: row;
+	display: flex;
+}
+
+.active {
+	color: orange !important;
+	border-bottom: 3px solid orange;
+}
