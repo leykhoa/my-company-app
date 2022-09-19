@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import images from '~/assets/images/images';
+import { useSelector } from 'react-redux';
 import { privateRoute, publicRoute } from '~/routes';
 import classNames from 'classnames/bind';
 import styles from './Header.module.scss';
-import './Header.module.scss';
-import { useSelector } from 'react-redux';
 
 const cx = classNames.bind(styles);
 

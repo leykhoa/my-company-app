@@ -19,6 +19,7 @@ import {
 	LOGOUT,
 	REFRESH_TOKEN,
 	UPDATE_USER,
+	UPLOAD_IMG,
 } from './common';
 import { checkInStart } from '../reducer/attendanceSlice';
 import {
@@ -134,10 +135,37 @@ export const getMembers = async (user, dispatch, navigate) => {
 				dispatch(getMembersFailure(err));
 			});
 	} catch (err) {
-		console.log(err);
+		console.error(err);
+		if (err.response) {
+			return { errorMessage: err.response.data.errorMessage };
+		}
 	}
 };
 
+//UPLOAD IMAGE
+
+export const uploadImage = async (newUser, dispatch, navigate, data) => {
+	try {
+		const axiosJWToken = await axiosJWT(newUser, dispatch, navigate);
+		return axiosJWToken
+			.post(UPLOAD_IMG, { file: data, user: newUser })
+			.then((res) => {
+				const newData = { ...res.data, accessToken: newUser.accessToken };
+				console.log(newData);
+				dispatch(loginSuccess(newData));
+				return newData.imageUrl;
+			})
+			.catch((err) => {
+				if (err.response) {
+					return { errorMessage: err.response.data.errorMessage };
+				}
+			});
+	} catch (err) {
+		if (err.response) {
+			return { errorMessage: err.response.data.errorMessage };
+		}
+	}
+};
 // export const addStaff = (user, dispatch, navigate) => {
 // 	dispatch(addStaffStart);
 // 	axiosInstance

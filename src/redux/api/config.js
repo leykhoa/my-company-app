@@ -5,13 +5,13 @@ import { refreshToken } from '.';
 import { loginSuccess, logoutSuccess } from '../reducer/authSlice';
 
 export const axiosInstance = axios.create({
-	baseURL: 'http://localhost:8080/',
+	baseURL: process.env.API,
 	timeout: 300000,
 });
 
 export const axiosJWT = async (user, dispatch, navigate) => {
 	const axiosJWT = axios.create({
-		baseURL: 'http://localhost:8080/',
+		baseURL: process.env.API,
 		timeout: 300000,
 	});
 	axiosJWT.interceptors.request.use(

@@ -9,6 +9,7 @@ export const LOGIN = 'auth/login';
 export const GET_USER = 'user';
 export const GET_MEMBERS = 'user/all-members';
 export const UPDATE_USER = 'user/update';
+export const UPLOAD_IMG = 'user/update-image';
 
 //attendance
 

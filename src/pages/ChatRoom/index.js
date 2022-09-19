@@ -1,5 +1,12 @@
+import { Modal } from 'antd';
+
 function ChatRoom() {
-	return <h1> This is ChatRoom</h1>;
+	return (
+		<Modal title='Basic Modal' open={true}>
+			<p>Some contents...</p>
+			<p>Some contents...</p>
+		</Modal>
+	);
 }
 
 export default ChatRoom;

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames/bind';
 import styles from './Attendance.module.scss';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import { checkIn } from '~/redux/api';
 import { useNavigate } from 'react-router-dom';
 

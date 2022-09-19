@@ -113,6 +113,12 @@ body {
 		rgba(43, 43, 80, 1) 100%
 	);
 }
+.ant-input[disabled]:hover {
+	border-color: red !important;
+}
+.ant-input[disabled] {
+	color: blue !important;
+}
 .ant-menu-item-selected {
 	background: rgb(238, 249, 255) !important;
 }

@@ -28,7 +28,15 @@ function getItem(label, key, icon, children) {
 }
 
 function Option2() {
-	return <h1>This is Option 2 </h1>;
+	return (
+		<h1>
+			<h2>Hello</h2>
+			<Modal title='Basic Modal' open={true}>
+				<p>Some contents...</p>
+				<p>Some contents...</p>
+			</Modal>
+		</h1>
+	);
 }
 
 function Logout() {
@@ -60,7 +68,7 @@ const User = () => {
 
 	const navigate = useNavigate();
 	const contentList = [
-		{ key: '1', element: <Profile user={user} /> },
+		{ key: '1', element: <Profile /> },
 		{ key: '2', element: <Option2 /> },
 		{ key: '3', element: <Option2 /> },
 		{ key: '4' },
@@ -75,6 +83,7 @@ const User = () => {
 			}
 		});
 	};
+	useEffect(() => {}, [user]);
 
 	return (
 		<Layout

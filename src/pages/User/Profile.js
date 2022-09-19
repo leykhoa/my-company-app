@@ -1,76 +1,56 @@
 import {
 	CloudUploadOutlined,
 	ExclamationCircleOutlined,
+	LoadingOutlined,
 	PlusOutlined,
 	UploadOutlined,
 } from '@ant-design/icons';
-import {
-	Button,
-	Cascader,
-	Checkbox,
-	DatePicker,
-	Form,
-	Image,
-	Input,
-	InputNumber,
-	Modal,
-	Radio,
-	Select,
-	Spin,
-	Switch,
-	Upload,
-} from 'antd';
+import { Button, DatePicker, Form, Image, Input, Modal, Select, Spin, Upload } from 'antd';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import ImgCrop from 'antd-img-crop';
 import { Fragment } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { logoutUser, updateUser } from '~/redux/api';
+import { logoutUser, updateUser, uploadImage } from '~/redux/api';
 import { toast, ToastContainer } from 'react-toastify';
 
 function Profile(props) {
-	const user = props.user;
+	let isAdmin = true;
+
+	const user = useSelector((state) => state.auth.login.data);
+	const [loading, setLoading] = useState(false);
+	const [userImage, setUserImage] = useState({});
+	const [disableInput, setDisableInput] = useState(true);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const loadingUpdate = useSelector((state) => state.users.update.isLoading);
+	const loadingUpdate = useSelector((state) => state.users.update?.isLoading) || false;
+
 	const handleUpdateProfile = async (values) => {
 		const doB = values.doB.toISOString();
 		const startDate = values.startDate.toISOString();
 		const newUser = { ...user, ...values, doB, startDate };
-		try {
-			const update = await updateUser(newUser, dispatch, navigate);
-			if (update.errorMessage) {
-				toast.error(`${update.errorMessage}`, {
-					position: 'top-right',
-					autoClose: 5000,
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-					progress: undefined,
-				});
-				return confirm();
-			}
-			toast.success('Update success', {
-				position: 'top-right',
-				autoClose: 5000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-			});
+		const data = new FormData();
+		data.append('file-info', userImage);
+		data.append('user', newUser);
 
-			return setDisableInput(true);
-		} catch (err) {
-			console.log('check err update', err);
+		const imageUpload = await uploadImage(newUser, dispatch, navigate, data);
+		if (imageUpload.errorMessage) {
+			return toast.error(`${imageUpload.errorMessage}`);
 		}
+		// try {
+		// 	const update = await updateUser(newUser, dispatch, navigate, data);
+		// 	if (update.errorMessage) {
+		// 		toast.error(`${update.errorMessage}`);
+		// 		return confirm();
+		// 	}
+		// 	toast.success('Update success');
+
+		// 	return setDisableInput(true);
+		// } catch (err) {
+		// 	console.log('check err update', err);
+		// }
 	};
 
-	const handleCancel = () => {
-		setPreviewVisible(false);
-	};
 	const confirm = () => {
 		Modal.confirm({
 			title: 'Confirm',
@@ -84,82 +64,87 @@ function Profile(props) {
 		});
 	};
 
-	const [disableInput, setDisableInput] = useState(true);
-
 	const editProfile = () => {
-		setDisableInput(!disableInput);
+		setDisableInput(false);
 	};
-
-	// const onFormLayoutChange = ({ disabled }) => {
-	// 	setComponentDisabled(disabled);
-	// };
-	const [form] = Form.useForm();
-
-	const dateFormat = 'DD/MM/YYYY';
-	const getFile = (e) => {
-		console.log('Upload event:', e);
-	};
-
-	const [fileList, setFileList] = useState([
-		{
-			uid: '-1',
-			name: 'image.png',
-			status: 'done',
-			url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-		},
-	]);
-
-	const onChange = ({ fileList: newFileList }) => {
-		setFileList(newFileList);
-	};
-
-	const initialValues = { ...user, doB: moment(user.doB), startDate: moment(user.startDate) };
-	const [previewVisible, setPreviewVisible] = useState(false);
-	const [previewImage, setPreviewImage] = useState('');
-	const [previewTitle, setPreviewTitle] = useState('');
-	const getBase64 = (file) =>
-		new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-
-			reader.onload = () => {
-				console.log('check getbase', reader);
-				return resolve(reader.result);
-			};
-
-			reader.onerror = (error) => reject(error);
-		});
-	const onPreview = async (file) => {
-		console.log('check file', file);
-
-		if (!file.url && !file.preview) {
-			file.preview = await getBase64(file.originFileObj);
-		}
-
-		setPreviewImage(file.url || file.preview);
-		setPreviewVisible(true);
-		setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
-	};
-
 	const cancelUpload = () => {
 		setDisableInput(true);
 		form.setFieldsValue(initialValues);
 	};
-	let isAdmin = true;
+
+	const [form] = Form.useForm();
+
+	const dateFormat = 'DD/MM/YYYY';
+
+	const initialValues = { ...user, doB: moment(user.doB), startDate: moment(user.startDate) };
+
+	//IMAGE
+
+	function getBase64(file, callback) {
+		let reader = new FileReader();
+		reader.addEventListener('load', () => callback(reader.result));
+		reader.readAsDataURL(file);
+	}
+
+	const beforeUpload = (file) => {
+		file.status = 'done';
+		const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+		const isLt2M = file.size / 1024 / 1024 < 2;
+		if (!isJpgOrPng) {
+			toast.error('You can only upload JPG/PNG file!');
+			file.status = 'error';
+		}
+
+		if (!isLt2M) {
+			toast.error('Image must smaller than 2MB!');
+			file.status = 'error';
+		}
+		return isJpgOrPng && isLt2M;
+	};
+
+	const handleActionImage = async (file) => {
+		console.log('ok');
+		setOpen(true);
+		if (file.status === 'uploading') {
+			setLoading(true);
+			return;
+		}
+		getBase64(file, (url) => {
+			file.url = url;
+			setLoading(false);
+			setUserImage(file);
+		});
+	};
+
+	//OPEN Image
+	const [open, setOpen] = useState(false);
+	const [confirmLoading, setConfirmLoading] = useState(false);
+	const [modalText, setModalText] = useState('Content of the modal');
+
+	const handleOk = () => {
+		setModalText('The modal will be closed after two seconds');
+		setConfirmLoading(true);
+		setTimeout(() => {
+			setOpen(false);
+			setConfirmLoading(false);
+		}, 2000);
+	};
+
+	const handleCancel = () => {
+		setOpen(false);
+	};
+
+	useEffect(() => {}, [user]);
+
 	return (
 		<>
 			<div>
 				{user && (
 					<Spin tip='Updating...' spinning={loadingUpdate}>
 						<div className='row'>
-							<div className='col-6'>
-								<Image
-									src={fileList.length ? fileList[0].url : user.imageUrl}
-									alt='avata'
-									width='100%'
-								/>
+							<div className='col-3'>
+								<Image src={user.imageUrl} alt='avatar-user' width='100%' />
 							</div>
-
 							<Form
 								form={form}
 								initialValues={initialValues}
@@ -224,19 +209,26 @@ function Profile(props) {
 								)}
 								{!disableInput && (
 									<Fragment>
-										<Form.Item label='Edit avata'>
-											<ImgCrop rotate>
-												<Upload
-													action='https://www.mocky.io/v2/5cc8019d300000980a055e76'
-													listType='picture-card'
-													fileList={fileList}
-													onChange={onChange}
-													onPreview={onPreview}
-													disabled={disableInput}
-												>
-													{fileList.length < 1 && '+ Upload'}
-												</Upload>
-											</ImgCrop>
+										<Form.Item label='Edit avatar'>
+											<Upload
+												name='avatar'
+												listType='picture-card'
+												className='avatar-uploader'
+												beforeUpload={beforeUpload}
+												action={handleActionImage}
+												showUploadList={false}
+											>
+												<div>
+													<PlusOutlined />
+													<div
+														style={{
+															marginTop: 8,
+														}}
+													>
+														Upload
+													</div>
+												</div>
+											</Upload>
 										</Form.Item>
 										<Button
 											className='btn btn-primary'
@@ -259,25 +251,43 @@ function Profile(props) {
 									</Fragment>
 								)}
 							</Form>
-							<Modal
-								visible={previewVisible}
-								title={previewTitle}
-								footer={null}
-								onCancel={handleCancel}
-							>
-								<img
-									alt='example'
-									style={{
-										width: '100%',
-									}}
-									src={previewImage}
-								/>
-							</Modal>
-							<ToastContainer />
+							<ToastContainer
+								position='top-right'
+								autoClose={5000}
+								hideProgressBar={false}
+								newestOnTop={false}
+								closeOnClick
+								rtl={false}
+								pauseOnFocusLoss
+								draggable
+								pauseOnHover
+							/>
 						</div>
 					</Spin>
 				)}
 			</div>
+			<Modal
+				title='Title'
+				open={true}
+				onOk={handleOk}
+				confirmLoading={confirmLoading}
+				onCancel={handleCancel}
+			>
+				<div>Hello</div>
+				{/* {userImage.url && (
+					<img
+						src={userImage.url}
+						alt='avatar'
+						style={{
+							width: '100%',
+						}}
+					/>
+				)} */}
+			</Modal>
+			<Modal title='Basic Modal' open={true} onOk={handleOk} onCancel={handleCancel}>
+				<p>Some contents...</p>
+				<p>Some contents...</p>
+			</Modal>
 		</>
 	);
 }

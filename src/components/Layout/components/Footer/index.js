@@ -1,3 +1,4 @@
+import { Modal } from 'antd';
 import classNames from 'classnames/bind';
 import styles from './Footer.module.scss';
 
@@ -19,6 +20,10 @@ function Footer() {
 				<div className='col-4'></div>
 				<div className='col-4'></div>
 			</div>
+			<Modal title='Basic Modal' open={true}>
+				<p>Some contents...</p>
+				<p>Some contents...</p>
+			</Modal>
 		</footer>
 	);
 }
